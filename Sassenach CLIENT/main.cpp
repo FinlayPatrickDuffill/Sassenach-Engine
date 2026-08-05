@@ -92,14 +92,24 @@ int main( int argc, char* args[] )
                     success = false;
     }
 
+    gDealerHigh = NULL;
+    gDealerLow = NULL;
 
-
-    Dealer = Mix_LoadWAV( "Dealer.wav" );
-    if( Dealer == NULL )
+    gDealerHigh = Mix_LoadWAV( "Dealer.wav" );
+    if( gDealerHigh == NULL )
     {
         printf( "Failed to load bitch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
         success = false;
     }
+
+    gDealerLow = Mix_LoadWAV( "Dealer2.wav" );
+    if( gDealerLow == NULL )
+    {
+        printf( "Failed to load bitch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+        success = false;
+    }
+
+
 
     /* Allocate a vector of packets for client messages */
     packets = SDLNet_AllocPacketV(4, CHAT_PACKETSIZE);
@@ -382,6 +392,18 @@ int main( int argc, char* args[] )
             //_____________________________
 
             }
+
+             if (stepsound1)
+             {
+                 Mix_PlayChannel( -1, gDealerLow, 0 );
+                 stepsound1 = false;
+             }
+             if (stepsound2)
+             {
+                 Mix_PlayChannel( -1, gDealerHigh, 0 );
+                 stepsound2 = false;
+             }
+
             //____________________________________________
             // Keyboard controls get sent over the network
             //____________________________________________
@@ -401,7 +423,7 @@ for (int i = 0; i != 300; i++) {
         inks--;
         char coord_decode, nvalue;
         if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
-                Mix_PlayChannel( -1, Dealer, 0 );
+                play_step();
         }
       }
     }
@@ -413,7 +435,7 @@ for (int i = 0; i != 300; i++) {
             char coord_decode = primitive_movement_data_encoder(coord_decode, cubePositions[network_target][0]);animation_buffer[i] = -1;
         inks--;
         if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
-                Mix_PlayChannel( -1, Dealer, 0 );
+                play_step();
         }
       }
     }
@@ -432,7 +454,7 @@ for (int i = 0; i != 300; i++) {
           nvalue = 1;
         }
         if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
-                Mix_PlayChannel( -1, Dealer, 0 );
+                play_step();
         }
       }
     }
@@ -452,7 +474,7 @@ for (int i = 0; i != 300; i++) {
         }
 
         if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
-                Mix_PlayChannel( -1, Dealer, 0 );
+                play_step();
         }
         }
     }

@@ -20,7 +20,10 @@
 #define MOVESOUTH 3
 #define MOVEWEST 4
 
-Mix_Chunk* Dealer = NULL;
+Mix_Chunk* gDealerHigh;
+Mix_Chunk* gDealerLow;
+bool stepsound1 = false;
+bool stepsound2 = false;
 
 bool isNotMultipleOfHalf(double num) {
     // Get the remainder of num divided by 0.5
@@ -48,6 +51,8 @@ float animation_buffer_terminate[300];
 int animation_targets[300];
 int animation_instructions[300];
 int inks = 0;
+
+int step = 0;
 
 //keyboard -
 const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
@@ -1200,6 +1205,7 @@ keyboardState = SDL_GetKeyboardState(NULL);
 
 				    if (keyboardState[SDL_SCANCODE_5])
                 {
+                    Mix_PlayChannel( -1, gDealerHigh, 0 );
                     viewport_size_x = viewport_size_x - (SCREEN_WIDTH/2/10);
                     viewport_size_y = viewport_size_y - (SCREEN_HEIGHT/2/10);
 				    viewport_magnify_x = viewport_magnify_x + (SCREEN_WIDTH/10);
@@ -1312,6 +1318,27 @@ void purgatory() {
     {
     HandleNet();
     }
+}
+
+void play_step() {
+     step++;
+     if (step >= 3){
+            int isStep_sound = rand() % 4 + 1;
+     if (isStep_sound == 1)
+     {
+         stepsound1 = true;
+         step = 0;
+     }
+     else if (isStep_sound > 2 && isStep_sound < 3)
+    {
+        step = 0;
+    }
+     else
+    {
+         stepsound2 = true;
+         step = 0;
+    }
+  }
 }
 
 
