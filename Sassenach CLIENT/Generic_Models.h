@@ -8,8 +8,8 @@
 //__________________________
 unsigned int VBO[900], VAO[900], VBO2[100], VAO2[100];
 
-float global_sprite_rot_angle_x = 3.949997f;
-float global_sprite_rot_angle_y  = 3.949997f;
+float global_sprite_rot_angle_x = 2.733231f;
+float global_sprite_rot_angle_y  = 2.733231f;
 
 float UI_model[] = {
         // UI elements are made out of 2 triangles
@@ -23,26 +23,26 @@ float UI_model[] = {
 
     float flat_sprite_model[] = {
         // this is one face of a geometric object
-        -0.50f, -0.25f, 0.0f,  0.0f, 0.0f,
-         0.50f, -0.25f, 0.0f,  1.0f, 0.0f,
-         0.50f,  0.60f, 0.0f,  1.0f, 1.0f,
-         0.50f,  0.60f, 0.0f,  1.0f, 1.0f,
-        -0.50f,  0.60f, 0.0f,  0.0f, 1.0f,
-        -0.50f, -0.25f, 0.0f,  0.0f, 0.0f,
+        -0.00015f, -0.015f, 0.0f,  0.0f, 0.0f,
+         0.00015f, -0.015f, 0.0f,  1.0f, 0.0f,
+         0.00015f,  0.025f, 0.0f,  1.0f, 1.0f,
+         0.00015f,  0.025f, 0.0f,  1.0f, 1.0f,
+        -0.00015f,  0.025f, 0.0f,  0.0f, 1.0f,
+        -0.00015f, -0.015f, 0.0f,  0.0f, 0.0f,
     };
 
 void normalize_flat_sprite_model() {
 
-        flat_sprite_model[0] = (0.25f)*glm::sin(global_sprite_rot_angle_x);
-        flat_sprite_model[2] = (0.27f)*glm::cos(global_sprite_rot_angle_y);
-        flat_sprite_model[10] = (0.25f)*glm::sin(global_sprite_rot_angle_x);
-        flat_sprite_model[12] = (0.27f)*glm::cos(global_sprite_rot_angle_y);
+        flat_sprite_model[0] = (0.015f)*glm::sin(global_sprite_rot_angle_x);
+        flat_sprite_model[2] = (0.015f)*glm::cos(global_sprite_rot_angle_y);
+        flat_sprite_model[10] = (0.015f)*glm::sin(global_sprite_rot_angle_x);
+        flat_sprite_model[12] = (0.015f)*glm::cos(global_sprite_rot_angle_y);
         flat_sprite_model[27] = flat_sprite_model[2];
         flat_sprite_model[25] = flat_sprite_model[0];
         flat_sprite_model[22] = flat_sprite_model[2];
         flat_sprite_model[20] = flat_sprite_model[0];
-        flat_sprite_model[5] = (-0.25f)*glm::sin(global_sprite_rot_angle_x);
-        flat_sprite_model[7] = (-0.27f)*glm::cos(global_sprite_rot_angle_y);
+        flat_sprite_model[5] = (-0.015f)*glm::sin(global_sprite_rot_angle_x);
+        flat_sprite_model[7] = (-0.015f)*glm::cos(global_sprite_rot_angle_y);
         flat_sprite_model[15] = flat_sprite_model[5];
         flat_sprite_model[17] = flat_sprite_model[7];
         flat_sprite_model[10] = flat_sprite_model[15];
@@ -54,47 +54,47 @@ void normalize_flat_sprite_model() {
     // ------------------------------------------------------------------
     float cube_model[] = {
         // this is all one cube
-        -0.25f, -0.25f, -0.25f,  0.0f, 0.0f,
-         0.25f, -0.25f, -0.25f,  1.0f, 0.0f,
-         0.25f,  0.25f, -0.25f,  1.0f, 1.0f,
-         0.25f,  0.25f, -0.25f,  1.0f, 1.0f,
-        -0.25f,  0.25f, -0.25f,  0.0f, 1.0f,
-        -0.25f, -0.25f, -0.25f,  0.0f, 0.0f,
+        -0.005f, -0.005f, -0.005f,  0.0f, 0.0f,
+         0.005f, -0.005f, -0.005f,  1.0f, 0.0f,
+         0.005f,  0.005f, -0.005f,  1.0f, 1.0f,
+         0.005f,  0.005f, -0.005f,  1.0f, 1.0f,
+        -0.005f,  0.005f, -0.005f,  0.0f, 1.0f,
+        -0.005f, -0.005f, -0.005f,  0.0f, 0.0f,
 
-        -0.25f, -0.25f,  0.25f,  0.0f, 0.0f,
-         0.25f, -0.25f,  0.25f,  1.0f, 0.0f,
-         0.25f,  0.25f,  0.25f,  1.0f, 1.0f,
-         0.25f,  0.25f,  0.25f,  1.0f, 1.0f,
-        -0.25f,  0.25f,  0.25f,  0.0f, 1.0f,
-        -0.25f, -0.25f,  0.25f,  0.0f, 0.0f,
+        -0.005f, -0.005f,  0.005f,  0.0f, 0.0f,
+         0.005f, -0.005f,  0.005f,  1.0f, 0.0f,
+         0.005f,  0.005f,  0.005f,  1.0f, 1.0f,
+         0.005f,  0.005f,  0.005f,  1.0f, 1.0f,
+        -0.005f,  0.005f,  0.005f,  0.0f, 1.0f,
+        -0.005f, -0.005f,  0.005f,  0.0f, 0.0f,
 
-        -0.25f,  0.25f,  0.25f,  1.0f, 0.0f,
-        -0.25f,  0.25f, -0.25f,  1.0f, 1.0f,
-        -0.25f, -0.25f, -0.25f,  0.0f, 1.0f,
-        -0.25f, -0.25f, -0.25f,  0.0f, 1.0f,
-        -0.25f, -0.25f,  0.25f,  0.0f, 0.0f,
-        -0.25f,  0.25f,  0.25f,  1.0f, 0.0f,
+        -0.005f,  0.005f,  0.005f,  1.0f, 0.0f,
+        -0.005f,  0.005f, -0.005f,  1.0f, 1.0f,
+        -0.005f, -0.005f, -0.005f,  0.0f, 1.0f,
+        -0.005f, -0.005f, -0.005f,  0.0f, 1.0f,
+        -0.005f, -0.005f,  0.005f,  0.0f, 0.0f,
+        -0.005f,  0.005f,  0.005f,  1.0f, 0.0f,
 
-         0.25f,  0.25f,  0.25f,  1.0f, 0.0f,
-         0.25f,  0.25f, -0.25f,  1.0f, 1.0f,
-         0.25f, -0.25f, -0.25f,  0.0f, 1.0f,
-         0.25f, -0.25f, -0.25f,  0.0f, 1.0f,
-         0.25f, -0.25f,  0.25f,  0.0f, 0.0f,
-         0.25f,  0.25f,  0.25f,  1.0f, 0.0f,
+         0.005f,  0.005f,  0.005f,  1.0f, 0.0f,
+         0.005f,  0.005f, -0.005f,  1.0f, 1.0f,
+         0.005f, -0.005f, -0.005f,  0.0f, 1.0f,
+         0.005f, -0.005f, -0.005f,  0.0f, 1.0f,
+         0.005f, -0.005f,  0.005f,  0.0f, 0.0f,
+         0.005f,  0.005f,  0.005f,  1.0f, 0.0f,
 
-        -0.25f, -0.25f, -0.25f,  0.0f, 1.0f,
-         0.25f, -0.25f, -0.25f,  1.0f, 1.0f,
-         0.25f, -0.25f,  0.25f,  1.0f, 0.0f,
-         0.25f, -0.25f,  0.25f,  1.0f, 0.0f,
-        -0.25f, -0.25f,  0.25f,  0.0f, 0.0f,
-        -0.25f, -0.25f, -0.25f,  0.0f, 1.0f,
+        -0.005f, -0.005f, -0.005f,  0.0f, 1.0f,
+         0.005f, -0.005f, -0.005f,  1.0f, 1.0f,
+         0.005f, -0.005f,  0.005f,  1.0f, 0.0f,
+         0.005f, -0.005f,  0.005f,  1.0f, 0.0f,
+        -0.005f, -0.005f,  0.005f,  0.0f, 0.0f,
+        -0.005f, -0.005f, -0.005f,  0.0f, 1.0f,
 
-        -0.25f,  0.25f, -0.25f,  0.0f, 1.0f,
-         0.25f,  0.25f, -0.25f,  1.0f, 1.0f,
-         0.25f,  0.25f,  0.25f,  1.0f, 0.0f,
-         0.25f,  0.25f,  0.25f,  1.0f, 0.0f,
-        -0.25f,  0.25f,  0.25f,  0.0f, 0.0f,
-        -0.25f,  0.25f, -0.25f,  0.0f, 1.0f
+        -0.005f,  0.005f, -0.005f,  0.0f, 1.0f,
+         0.005f,  0.005f, -0.005f,  1.0f, 1.0f,
+         0.005f,  0.005f,  0.005f,  1.0f, 0.0f,
+         0.005f,  0.005f,  0.005f,  1.0f, 0.0f,
+        -0.005f,  0.005f,  0.005f,  0.0f, 0.0f,
+        -0.005f,  0.005f, -0.005f,  0.0f, 1.0f
     };
 
 glm::vec3 UI_Positions[] = {

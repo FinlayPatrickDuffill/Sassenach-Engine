@@ -25,6 +25,28 @@ int findindex = 6;
 using namespace std;
 #define game_state_off 42
 
+/*
+glm::vec make_room_for_new_geometry() {
+glm::vec  max = sizeof(cubePositions);            // Current allocated max size.
+glm::vec* a   = new glm::vec[max];  // Allocate space in heap.
+glm::vec  n   = 0;             // Current number of elements.
+
+//--- Read into the array
+while (cin >> a[n]) {
+    n++;
+    if (n >= max) {
+        max = max * 2;            // Double the previous size.
+        int* temp = glm::vec[max]; // Allocate new, bigger array.
+        for (int i=0; i<n; i++) {
+            temp[i] = a[i];       // Copy old array to new array.
+        }
+        delete [] a;              // Free old array memory.
+        a = temp;                 // Now a points to new array.
+    }
+  }
+}*/
+
+
 bool tacked_south, tacked_north, tacked_east, tacked_west = false;
 
 int main( int argc, char* args[] )
@@ -225,21 +247,21 @@ int main( int argc, char* args[] )
 
         glClear( GL_COLOR_BUFFER_BIT );
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+        glClearColor(0.0f, 0.0f, 1.0f, 0.5f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // activate shader
         ourShader.use();
 
-        camera_x_coord = -cubePositions[network_carbon_controlling][2];
-        camera_y_coord = -cubePositions[network_carbon_controlling][0];
-        camera_z_coord = -cubePositions[network_carbon_controlling][1];
+        camera_x_coord = -cubePositions[network_carbon_controlling].z;
+        camera_y_coord = -cubePositions[network_carbon_controlling].x;
+        camera_z_coord = -cubePositions[network_carbon_controlling].y;
 
         glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 projection    = glm::mat4(5.0f);
         view       = glm::translate(view, glm::vec3(camera_x_cardinal, camera_y_cardinal, camera_z_cardinal));
-        projection = glm::ortho(glm::radians(radians), 13.5f, 2.8f, 12.8f, -40.f, 40.f);
-        view       = glm::rotate(view, glm::radians(angle2), glm::vec3(0.25f, 0.0f, 0.0f));
+        projection = glm::ortho(glm::radians(radians), 16.5f, 2.8f, 12.8f, -100.f, 100.f);
+        view       = glm::rotate(view, glm::radians(angle2), glm::vec3(angle_rot_orth_x, 1.0f, angle_rot_orth_z));
         view       = glm::rotate(view, glm::radians(angle), glm::vec3(0.0f, camera_manip_ortho_y, 0.0f));
         view       = glm::translate(view, glm::vec3(0.f, 0.f, camera_x_coord));
         view       = glm::translate(view, glm::vec3(camera_y_coord, 0.f, 0.f));
@@ -267,42 +289,48 @@ int main( int argc, char* args[] )
 	//___________________
     glViewport( viewport_size_x , viewport_size_y , SCREEN_WIDTH+viewport_magnify_x, SCREEN_HEIGHT+viewport_magnify_y );
 
-        int player_indexes = 0;
+        // Reset your tracking index before starting the loop
+int player_indexes = 0;
 
-        // This loop currently draws all geometries in the game world
-        //____________________________________________________________
-
-        for (unsigned int i = 0; i < sizeof(cubePositions)/3; i++)
+// 1. FIXED: Correctly loop through a std::vector using .size()
+for (size_t i = 0; i < cubePositions.size(); i++)
+{
+    if (player_indexes <= tot_players - 1)
+    {
+        if (((Carbon*)player->get(player_indexes))->perspective_index == i)
         {
-            if (player_indexes <= tot_players-1)
-            {
-                if (((Carbon*)player->get(player_indexes))->perspective_index
-                    == i)
-                {
-                    // Textures belonging to the sprite
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, 4);
-                    glBindVertexArray(VAO[3]);
-                    glm::mat4 model = glm::mat4(50.0f);
-                    model = glm::translate(model, cubePositions[i]);
-                    ourShader.setMat4("model", model);
-                    glDrawArrays(GL_TRIANGLES, 0, 6);
-                    player_indexes++;
-                }
-            }
-            else
-            {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, 2);
-                glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, 4);
-                glBindVertexArray(VAO[1]);
-                glm::mat4 model = glm::mat4(50.0f);
-                model = glm::translate(model, cubePositions[i]);
-                ourShader.setMat4("model", model);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, 4);
+            glBindVertexArray(VAO[3]);
+
+            // 2. FIXED: Initialize identity matrix and scale separately
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            model = glm::scale(model, glm::vec3(20.0f)); // Scales objects safely
+
+            ourShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            player_indexes++;
+
+            continue; // Move to the next cube position
         }
+    }
+
+    // Default rendering branch
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 2);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 4);
+    glBindVertexArray(VAO[1]);
+
+    // 2. FIXED: Initialize identity matrix and scale separately
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, cubePositions[i]);
+    model = glm::scale(model, glm::vec3(50.0f));
+
+    ourShader.setMat4("model", model);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
 
             //__________________________________________________________//
             //                                                          //
@@ -415,67 +443,46 @@ for (int i = 0; i != 300; i++) {
   if (animation_buffer[i] != -1) {
 
     if (animation_instructions[i] == WALKNORTH) {
-      cubePositions[animation_targets[i]][2] = cubePositions[animation_targets[i]][2] - 0.1f;
+      cubePositions[animation_targets[i]].z = cubePositions[animation_targets[i]].z - 0.1f;
       animation_buffer[i] = animation_buffer[i] + 0.1f;
       if (animation_buffer[i] >= animation_buffer_terminate[i]) {
 
         animation_buffer[i] = -1;
         inks--;
         char coord_decode, nvalue;
-        if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
                 play_step();
-        }
       }
     }
 
     if (animation_instructions[i] == MOVEEAST) {
-      cubePositions[animation_targets[i]][0] = cubePositions[animation_targets[i]][0] - 0.1f;
+      cubePositions[animation_targets[i]].x = cubePositions[animation_targets[i]].x - 0.1f;
       animation_buffer[i] = animation_buffer[i] + 0.1f;
       if (animation_buffer[i] >= animation_buffer_terminate[i]) {
-            char coord_decode = primitive_movement_data_encoder(coord_decode, cubePositions[network_target][0]);animation_buffer[i] = -1;
+            animation_buffer[i] = -1;
         inks--;
-        if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
                 play_step();
-        }
       }
     }
 
     if (animation_instructions[i] == MOVESOUTH) {
-      cubePositions[animation_targets[i]][2] = cubePositions[animation_targets[i]][2] + 0.1f;
+      cubePositions[animation_targets[i]].z = cubePositions[animation_targets[i]].z + 0.1f;
       animation_buffer[i] = animation_buffer[i] + 0.1f;
       if (animation_buffer[i] >= animation_buffer_terminate[i]) {
                     animation_buffer[i] = -1;
         inks--;
-        char coord_decode = primitive_movement_data_encoder(coord_decode, cubePositions[network_target][0]);
         char nvalue;
-        if (cubePositions[network_target][0] > 0) {
-          nvalue = 0;
-        } else {
-          nvalue = 1;
-        }
-        if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
                 play_step();
-        }
       }
     }
 
     if (animation_instructions[i] == MOVEWEST) {
-      cubePositions[animation_targets[i]][0] = cubePositions[animation_targets[i]][0] + 0.1f;
+      cubePositions[animation_targets[i]].x = cubePositions[animation_targets[i]].x + 0.1f;
       animation_buffer[i] = animation_buffer[i] + 0.1f;
       if (animation_buffer[i] >= animation_buffer_terminate[i]) {
                     animation_buffer[i] = -1;
         inks--;
-        char coord_decode = primitive_movement_data_encoder(coord_decode, cubePositions[network_target][0]);
         char nvalue;
-        if (cubePositions[network_target][0] > 0) {
-          nvalue = 0;
-        } else {
-          nvalue = 1;
-        }
-
-        if (primitive_movement_data_encoder(coord_decode, cubePositions[animation_targets[i]][2] - 0.5f) != -999) {
                 play_step();
-        }
         }
     }
   }

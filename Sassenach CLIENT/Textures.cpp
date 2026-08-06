@@ -31,8 +31,8 @@ float LinearizeDepth(float depth)
     return (2.0 * near * far) / (far + near - z * (far - near));
 }
 
-// float i stores / used to store the angle of the isometric perspective
-//there's only one screen, I probably don't have to change this right
+// Float i stores / used to store the angle of the isometric perspective
+// There's only one screen, I probably don't have to change this right
 float i, angle_flag;
 int elevation, elevation_increment;
 

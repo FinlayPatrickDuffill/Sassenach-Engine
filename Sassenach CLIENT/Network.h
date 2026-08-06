@@ -5,25 +5,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <SDL_mixer.h>
-#include <SDL_net.h>
-#include <SDL_test.h>
 #include "Textures.h"
 #include "Network_client_macros.h"
 #include "Generic_Models.h"
 #include "Events.h"
 #include "Camera.h"
 #include "clientside_ally_with_info.h"
+#include "Sound_Initializer.h"
+#include "Geometries.h"
 
 #define MOVENORTH 1
 #define MOVEEAST 2
 #define MOVESOUTH 3
 #define MOVEWEST 4
 
-Mix_Chunk* gDealerHigh;
-Mix_Chunk* gDealerLow;
-bool stepsound1 = false;
-bool stepsound2 = false;
+#define NETWORK_RECIPIENT_REQUEST_TO_MOVE 9
 
 bool isNotMultipleOfHalf(double num) {
     // Get the remainder of num divided by 0.5
@@ -54,79 +50,8 @@ int inks = 0;
 
 int step = 0;
 
-//keyboard -
+// Keyboard -
 const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
-
-// world space positions of every object in the chunk why not
-glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-        glm::vec3( 0.0f,  0.5f, 0.0f),
-// Reserved for players_______________//
-        glm::vec3( 0.0f,  0.0f, 0.0f),
-        glm::vec3( 0.5f,  0.0f, 0.0f),
-        glm::vec3( 1.0f,  0.0f, 0.0f),
-        glm::vec3( 1.5f,  0.0f, 0.0f),
-        glm::vec3( 2.0f,  0.0f, 0.0f),
-        glm::vec3( 2.5f,  0.0f, 0.0f),
-        glm::vec3( 3.0f,  0.0f, 0.0f),
-//____________________________________//
-        glm::vec3( 0.0f,  0.0f, 0.5f),
-        glm::vec3( 0.5f,  0.0f, 0.5f),
-        glm::vec3( 1.0f,  0.0f, 0.5f),
-        glm::vec3( 1.5f,  0.0f, 0.5f),
-        glm::vec3( 2.0f,  0.0f, 0.5f),
-        glm::vec3( 2.5f,  0.0f, 0.5f),
-        glm::vec3( 3.0f,  0.0f, 0.5f),
-//____________________________________//
-        glm::vec3( 0.0f,  0.0f, 1.0f),
-        glm::vec3( 0.5f,  0.0f, 1.0f),
-        glm::vec3( 1.0f,  0.0f, 1.0f),
-        glm::vec3( 1.5f,  0.0f, 1.0f),
-        glm::vec3( 2.0f,  0.0f, 1.0f),
-        glm::vec3( 2.5f,  0.0f, 1.0f),
-        glm::vec3( 3.0f,  0.0f, 1.0f),
-//____________________________________//
-        glm::vec3( 0.0f,  0.0f, 1.5f),
-        glm::vec3( 0.5f,  0.0f, 1.5f),
-        glm::vec3( 1.0f,  0.0f, 1.5f),
-        glm::vec3( 1.5f,  0.0f, 1.5f),
-        glm::vec3( 2.0f,  0.0f, 1.5f),
-        glm::vec3( 2.5f,  0.0f, 1.5f),
-        glm::vec3( 3.0f,  0.0f, 1.5f),
-//____________________________________//
-        glm::vec3( 0.0f,  0.0f, 2.0f),
-        glm::vec3( 0.5f,  0.0f, 2.0f),
-        glm::vec3( 1.0f,  0.0f, 2.0f),
-        glm::vec3( 1.5f,  0.0f, 2.0f),
-        glm::vec3( 2.0f,  0.0f, 2.0f),
-        glm::vec3( 2.5f,  0.0f, 2.0f),
-        glm::vec3( 3.0f,  0.0f, 2.0f),
-//____________________________________//
-        glm::vec3( 0.0f,  0.0f, 2.5f),
-        glm::vec3( 0.5f,  0.0f, 2.5f),
-        glm::vec3( 1.0f,  0.0f, 2.5f),
-        glm::vec3( 1.5f,  0.0f, 2.5f),
-        glm::vec3( 2.0f,  0.0f, 2.5f),
-        glm::vec3( 2.5f,  0.0f, 2.5f),
-        glm::vec3( 3.0f,  0.0f, 2.5f),
-//____________________________________//
-        glm::vec3( 0.0f,  0.0f, 3.0f),
-        glm::vec3( 0.5f,  0.0f, 3.0f),
-        glm::vec3( 1.0f,  0.0f, 3.0f),
-        glm::vec3( 1.5f,  0.0f, 3.0f),
-        glm::vec3( 2.0f,  0.0f, 3.0f),
-        glm::vec3( 2.5f,  0.0f, 3.0f),
-        glm::vec3( 3.0f,  0.0f, 3.0f),
-//____________________________________//
-};
 
 // Array for storing sotragerfd
 ObjectArray* animation_buffering = new ObjectArray();
@@ -329,10 +254,7 @@ int HandleServerData(Uint8 *data)
 
         case 20: {
 
-        // printf("Wathe\n");
-        // printf("[%d][%d][%d][%d][%d] > %d\n", data[0], data[1], data[2], data[3], data[4], ingame);
-
-        if (!ingame)
+            if (!ingame)
         {
             printf(" ingoyme[%d][%d][%d][%d][%d] > %d\n", data[0], data[1], data[2], data[3], data[4], ingame);
             if (data[1] == 89 && data[2] == 90)
@@ -350,17 +272,8 @@ int HandleServerData(Uint8 *data)
                 }
                 stuck_in_purgatory = false;
             }
-
         }
-        /*
-            if (data[1] == 50 && data[2] == 50)
-            {
-                    printf("Trying to create a new player\n");
-                    player->add(new Carbon("PLAYER"));
-                    tot_players++;
-            }*/
-
-        }
+     }
         break;
 
         case 12: {
@@ -391,24 +304,18 @@ int HandleServerData(Uint8 *data)
 
         }
         break;
-        case 9: {
-                // printf("%d%d%d%d\n", data[0], data[1], data[2],
-                //       data[3]);
-
-                // 1 of these is passed back to the server -
+        case NETWORK_RECIPIENT_REQUEST_TO_MOVE: {
 
             // North is [9][9][8]
             if (data[0] == 9 && data[1] == 8 && data[2] == 8)
                        {
-                       //    printf("Proceeding with movement");
                            network_control = 50;
                            network_target = data[3];
                        }
 
-            // East is [9][9][11]
+            // East is [9][9][10]
             if (data[0] == 9 && data[1] == 8 && data[2] == 10)
                        {
-                       //    printf("Proceeding with movement");
                            network_control = 51;
                            network_target = data[3];
                        }
@@ -429,7 +336,7 @@ int HandleServerData(Uint8 *data)
                            network_target = data[3];
                        }
 
-            // Down (z) is [9][9][12]
+            // Down (z) is [9][9][14]
             if (data[0] == 9 && data[1] == 8 && data[2] == 14)
                        {
                        //    printf("Proceeding with movement");
@@ -437,7 +344,7 @@ int HandleServerData(Uint8 *data)
                            network_target = data[3];
                        }
 
-            // Up (z) is [9][9][12]
+            // Up (z) is [9][9][13]
             if (data[0] == 9 && data[1] == 8 && data[2] == 13)
                        {
                        //    printf("Proceeding with movement");
@@ -451,9 +358,7 @@ int HandleServerData(Uint8 *data)
         }
         case 5: {
 
-                // 1 of these is passed back to the server -
-
-            if (data[0] == 5 && data[1] == 8)
+              if (data[0] == 5 && data[1] == 8)
                        {
                            if (data[2] == 1)
                            {
@@ -694,24 +599,6 @@ void soon_obsolete_hardcoded_network_test_function(gameworld_constants gameworld
 
 void process_moving_north() {
 
-bool pass = true;
-
-for (int x = 0; x != sizeof(cubePositions)/3; x++)
-{
-    if (cubePositions[network_target][1] == cubePositions[x][1])
-    {
-        if (cubePositions[network_target][2] - 0.5f == cubePositions[x][2])
-        {
-             if (cubePositions[network_target][0]  == cubePositions[x][0])
-            {
-                 pass = false;
-            }
-        }
-    }
-}
-if (pass)
-{
-
     if (inks < 300) {
     char coord_decode;
     animation_buffer_terminate[inks] = 0.5f;
@@ -735,19 +622,17 @@ if (pass)
     inks++;
     }
   }
-}
 
-void process_moving_east() {
-
+/*
 bool pass = true;
 
-for (int x = 0; x != sizeof(cubePositions)/3; x++)
+for (size_t  x = 0; x != cubePositions.size(); x++)
 {
-    if (cubePositions[network_target][1] == cubePositions[x][1])
+    if (cubePositions[network_target].y == cubePositions[x].y)
     {
-        if (cubePositions[network_target][2] == cubePositions[x][2])
+        if (cubePositions[network_target].z - 0.5f == cubePositions[x].z)
         {
-             if (cubePositions[network_target][0] - 0.5f  == cubePositions[x][0])
+             if (cubePositions[network_target].x  == cubePositions[x].x)
             {
                  pass = false;
             }
@@ -756,7 +641,30 @@ for (int x = 0; x != sizeof(cubePositions)/3; x++)
 }
 if (pass)
 {
-    if (inks < 300) {
+
+    */
+
+void process_moving_east() {
+/*
+bool pass = true;
+
+for (size_t  x = 0; x != cubePositions.size(); x++)
+{
+    if (cubePositions[network_target].y == cubePositions[x].y)
+    {
+        if (cubePositions[network_target].z == cubePositions[x].z)
+        {
+             if (cubePositions[network_target].x - 0.5f  == cubePositions[x].x)
+            {
+                 pass = false;
+            }
+        }
+    }
+}
+if (pass)
+{
+    */
+if (inks < 300) {
     char coord_decode;
     animation_buffer_terminate[inks] = 0.5f;
     animation_buffer[inks] = 0.f;
@@ -780,19 +688,18 @@ if (pass)
     inks++;
     }
   }
-}
 
 void process_moving_south() {
-
+/*
 bool pass = true;
 
-for (int x = 0; x != sizeof(cubePositions)/3; x++)
+for (size_t  x = 0; x != cubePositions.size(); x++)
 {
-    if (cubePositions[network_target][1] == cubePositions[x][1])
+    if (cubePositions[network_target].y == cubePositions[x].y)
     {
-        if (cubePositions[network_target][2] + 0.5f == cubePositions[x][2])
+        if (cubePositions[network_target].z + 0.5f == cubePositions[x].z)
         {
-             if (cubePositions[network_target][0]  == cubePositions[x][0])
+             if (cubePositions[network_target].x  == cubePositions[x].x)
             {
                  pass = false;
             }
@@ -801,7 +708,8 @@ for (int x = 0; x != sizeof(cubePositions)/3; x++)
 }
 if (pass)
 {
-         if (inks < 300) {
+         */
+if (inks < 300) {
          char coord_decode;
          animation_buffer_terminate[inks] = 0.5f;
          animation_buffer[inks] = 0.f;
@@ -822,23 +730,22 @@ if (pass)
            network_target );
     }
   }
-}
 
 
 
 
 
 void process_moving_west() {
-
+/*
 bool pass = true;
 
-for (int x = 0; x != sizeof(cubePositions)/3; x++)
+for (size_t  x = 0; x != cubePositions.size(); x++)
 {
-    if (cubePositions[network_target][1] == cubePositions[x][1])
+    if (cubePositions[network_target].y == cubePositions[x].y)
     {
-        if (cubePositions[network_target][2] == cubePositions[x][2])
+        if (cubePositions[network_target].z == cubePositions[x].z)
         {
-             if (cubePositions[network_target][0] + 0.5f  == cubePositions[x][0])
+             if (cubePositions[network_target].x + 0.5f  == cubePositions[x].x)
             {
                  pass = false;
             }
@@ -847,7 +754,8 @@ for (int x = 0; x != sizeof(cubePositions)/3; x++)
 }
 if (pass)
 {
-         if (inks < 300) {
+          */
+if (inks < 300) {
          char coord_decode;
          animation_buffer_terminate[inks] = 0.5f;
          animation_buffer[inks] = 0.f;
@@ -869,20 +777,19 @@ if (pass)
            network_target );
 }
 }
-}
 
 
 void process_moving_up() {
 
 bool pass = true;
 
-for (int x = 0; x != sizeof(cubePositions)/3; x++)
+for (size_t  x = 0; x != cubePositions.size(); x++)
 {
-    if (cubePositions[network_target][1] + 0.5f == cubePositions[x][1])
+    if (cubePositions[network_target].y + 0.5f == cubePositions[x].y)
     {
-        if (cubePositions[network_target][2] == cubePositions[x][2])
+        if (cubePositions[network_target].z == cubePositions[x].z)
         {
-             if (cubePositions[network_target][0]  == cubePositions[x][0])
+             if (cubePositions[network_target].x  == cubePositions[x].x)
             {
                  pass = false;
             }
@@ -920,11 +827,11 @@ void process_moving_down() {
 
 for (int x = 0; x != sizeof(cubePositions)/3; x++)
 {
-    if (cubePositions[network_target][1] - 0.5f == cubePositions[x][1])
+    if (cubePositions[network_target].y - 0.5f == cubePositions[x].y)
     {
-        if (cubePositions[network_target][2] == cubePositions[x][2])
+        if (cubePositions[network_target].z == cubePositions[x].z)
         {
-             if (cubePositions[network_target][0] == cubePositions[x][0])
+             if (cubePositions[network_target].x == cubePositions[x].x)
             {
                  pass = false;
                  jump_budget = maximum_jump_budget;
@@ -1202,10 +1109,17 @@ keyboardState = SDL_GetKeyboardState(NULL);
 					game_state_systems = game_state_off;
 					break;
 				case SDL_KEYDOWN:
+                    if (keyboardState[SDL_SCANCODE_K])
+                {
+                        cubePositions.push_back(glm::vec3(
+                        cubePositions[network_carbon_controlling].x,
+                        cubePositions[network_carbon_controlling].y,
+                        cubePositions[network_carbon_controlling].z));
+                }
+
 
 				    if (keyboardState[SDL_SCANCODE_5])
                 {
-                    Mix_PlayChannel( -1, gDealerHigh, 0 );
                     viewport_size_x = viewport_size_x - (SCREEN_WIDTH/2/10);
                     viewport_size_y = viewport_size_y - (SCREEN_HEIGHT/2/10);
 				    viewport_magnify_x = viewport_magnify_x + (SCREEN_WIDTH/10);
@@ -1227,6 +1141,19 @@ keyboardState = SDL_GetKeyboardState(NULL);
                     if (angle_rot >= -5.f)
                     angle_rot = angle_rot - 5.0f;
                     printf("%f\n", angle);
+                    printf("%f\n", global_sprite_rot_angle_x);
+                }
+                    if (keyboardState[SDL_SCANCODE_M])
+                {
+                    global_sprite_rot_angle_x = global_sprite_rot_angle_x + 0.01f;
+                    global_sprite_rot_angle_y = global_sprite_rot_angle_y + 0.01f;
+                    printf("%f\n", global_sprite_rot_angle_x );
+                }
+                    if (keyboardState[SDL_SCANCODE_N])
+                {
+                    global_sprite_rot_angle_x = global_sprite_rot_angle_x - 0.01f;
+                    global_sprite_rot_angle_y = global_sprite_rot_angle_y - 0.01f;
+                    printf("%f\n", global_sprite_rot_angle_x );
                 }
                 if (keyboardState[SDL_SCANCODE_D])
                 {
@@ -1270,6 +1197,26 @@ keyboardState = SDL_GetKeyboardState(NULL);
                 hello[3] = network_carbon_controlling;
                 SDLNet_TCP_Send(tcpsock, hello, CHAT_HELLO_NAME+n);
                 //_____________________________
+                }
+                if (keyboardState[SDL_SCANCODE_7])
+                {
+                    angle_rot_orth_x = angle_rot_orth_x + 0.2f;
+                    printf("%f\n", angle_rot_orth_x);
+                }
+                if (keyboardState[SDL_SCANCODE_8])
+                {
+                    angle_rot_orth_x = angle_rot_orth_x - 0.2f;
+                    printf("%f\n", angle_rot_orth_x);
+                }
+                if (keyboardState[SDL_SCANCODE_9])
+                {
+                    angle_rot_orth_z = angle_rot_orth_z + 0.2f;
+                    printf("%f\n", angle_rot_orth_z);
+                }
+                if (keyboardState[SDL_SCANCODE_0])
+                {
+                    angle_rot_orth_z = angle_rot_orth_z - 0.2f;
+                    printf("%f\n", angle_rot_orth_z);
                 }
                 if (keyboardState[SDL_SCANCODE_S])
                 {

@@ -4,7 +4,6 @@
 #include "Logging.h"
 #include <stdio.h>
 #include <string>
-#include <glm.hpp>
 #include <trigonometric.hpp>
 #include "MapLoading.h"
 
