@@ -258,6 +258,8 @@ chunk_storage *load_chunk_from_file(const char *name_of_file);
 
 ObjectArray* describe_chunk(const char *name_of_file, ObjectArray *chunk);
 
+ObjectArray* describe_chunk_new(const char *name_of_file, ObjectArray *chunk);
+
 void describe_peripheral_chunk(const char *name_of_file, ObjectArray *chunk);
 
 // , chunk_storage chunk_to_store

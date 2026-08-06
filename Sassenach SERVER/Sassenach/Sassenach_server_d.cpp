@@ -562,17 +562,8 @@ int main(int argc, char *argv[])
     active_chunk ->peripheral_offset_y = 0;
 
     active_chunk->chunk_enum = 0;
-    active_chunk = describe_chunk("new_terrain,0,0,0.txt", active_chunk);
-    for (int i = 0; i != active_chunk->chunk_size_eval_increment / 5; i++)
-    {
-            printf("%s %s %s %s %s\n",
-            ((Terrain*)active_chunk->get(i*5))->getName(),
-            ((Terrain*)active_chunk->get(i*5+1))->getName(),
-            ((Terrain*)active_chunk->get(i*5+2))->getName(),
-            ((Terrain*)active_chunk->get(i*5+3))->getName(),
-            ((Terrain*)active_chunk->get(i*5+4))->getName()
-        );
-    }
+    active_chunk = describe_chunk_new("new_terrain,0,0,0.txt", active_chunk);
+
 // ___________
 
     printf("Initializing SDL_net...");
