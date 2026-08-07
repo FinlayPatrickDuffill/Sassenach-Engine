@@ -12,6 +12,16 @@
 #include <stdio.h>
 using namespace std;
 
+int concatenate(int i, int j) {
+    int result = 0;
+
+    printf("%d || %d\n",i,j);
+    for (int x = i; x <= j; x++) {
+       result = result * 10 + x;
+    }
+    return result;
+}
+
 std::ifstream::pos_type filesize(const char* filename)
 {
     std::ifstream in(filename, std::ifstream::ate | std::ifstream::binary);
@@ -127,31 +137,32 @@ ObjectArray* describe_chunk_new(const char *name_of_file, ObjectArray *chunk) {
         {
             printf("File opened\n");
         }
+
         size_t len, pos = 0;
         bool isFound;
         int file_sizing = filesize(name_of_file);
         int c, c2; // Note: int, not char, required to handle EOF
 
         int terrain_block = -1;
-       std::string line;
+        std::string line;
 
         while ((c = std::fgetc(fp)) != EOF) {
                 if (c == '{')
             {
                 terrain_block++;
-                printf("Start of a terrain block %d\n", terrain_block);
+                printf("Describing terrain %d\n", terrain_block);
                 while ((c = std::fgetc(fp)) != '|') {
                         printf("%c",c);
                             line.append(1, c);
                         }
+                        chunk->add(new Terrain("TERRAIN"));
+                        line.clear();
+
                 while ((c = std::fgetc(fp)) != '$') {
                         if (c == '}')
                     {
-                        const char* Terrain_name = line.c_str();
-                        chunk->add(new Terrain(Terrain_name));
-                        printf("End of a terrain block %d %s\n\n", terrain_block, Terrain_name);
-                        line.clear();
-                       c = '}';
+                        printf("End of terrain block\n\n");
+                       c = '$';
                     }
                 }
             }
@@ -161,7 +172,17 @@ ObjectArray* describe_chunk_new(const char *name_of_file, ObjectArray *chunk) {
         chunk->flatten();
         chunk->chunk_size_eval_increment = terrain_block;
 
+        bool coord_var_block = false;
+        bool regular_var_block = false;
+
+        int variable_index = 0;
+        int variable_value = 0;
+
         c = 0;
+        terrain_block = 0;
+        // Place the beginning of the co-ordinates and variables
+        int beginning_coord_map = 0;
+        int chunk_index = 0;
 
             fp2 = std::fopen(name_of_file, "r");
         if (!fp2)
@@ -173,23 +194,100 @@ ObjectArray* describe_chunk_new(const char *name_of_file, ObjectArray *chunk) {
             printf("File opened\n");
         }
 
-        while ((c2 = std::fgetc(fp2)) != EOF) {
+        while ((c2 = std::fgetc(fp2)) != EOF)
+            {
                 if (c2 == '{')
             {
                 terrain_block++;
-                printf("Start of a terrain block %d\n", terrain_block);
-                while ((c2 = std::fgetc(fp2)) != '$') {
-                        if (c2 == '}')
+                printf("Describing terrain %d\n", terrain_block);
+                while ((c2 = std::fgetc(fp2)) != '$')
                     {
 
-                        printf("End of a terrain block %d\n\n", terrain_block);
-                       c2 = '}';
+                        // ___________
+
+                        if (c2 == '|')
+                        {
+                            if (coord_var_block == false)
+                            {
+                                printf("Doing coord var block\n");
+                                regular_var_block = true;
+                                coord_var_block = true;
+                                while ((c2 = std::fgetc(fp2)) != '|')
+                                {
+                                    if (c2 != ',')
+                                    {
+                                        // Fucked concatenation
+                                        variable_value = (variable_value*10) + c2-48;
+                                        printf("variable value %d:-> %d\n",variable_index, variable_value);
+                                    }
+                                    if (c2 == ',')
+                                    {
+                                       ((Terrain*)chunk->get(chunk_index))->var[variable_index] = variable_value*0.5f;
+                                       variable_index++;
+                                       variable_value = 0;
+                                    }
+                                }
+                                printf("000\n");
+                                variable_value = 0;
+                                variable_index = 0;
+                                printf("Doing regular var block\n");
+                                bool is_the_value = false;
+                                while ((c2 = std::fgetc(fp2)) != '}')
+                                {
+                                //_________________________________//
+                                    if (c2 == '/')
+                                    {
+                                        is_the_value = false;
+                                    }
+                                    else if (c2 == '=')
+                                    {
+                                        ((Terrain*)chunk->get(chunk_index))->var[variable_index] = variable_value*1.f;
+                                        printf("New variable added %d -> %f\n", variable_index,
+                                        ((Terrain*)chunk->get(chunk_index))->var[variable_index]);
+                                        is_the_value = true;
+                                        variable_index = 0;
+                                        variable_value = 0;
+                                    }
+                                    else
+                                    {   if (!is_the_value)
+                                        {
+                                            variable_index = ((variable_index*10) + c2-48)+2;
+                                            printf("%d:-> %d\n",variable_index, variable_value);
+                                        }
+                                        if (is_the_value)
+                                        {
+                                            // Fucked concatenation
+                                            variable_value = (variable_value*10) + c2-48;
+                                            printf("The value %d:-> %d\n",variable_index, variable_value);
+                                        }
+                                    }
+                                }
+
+                                variable_index = 0;
+                                variable_value = 0;
+                            }
+                            printf("coords of Terrain %d labelled [%s]: -> X %f Y %f Z %f 4 %f\n",
+                            chunk_index, ((Terrain*)chunk->get(0))->getName(),
+                            ((Terrain*)chunk->get(chunk_index))->var[0],
+                            ((Terrain*)chunk->get(chunk_index))->var[1],
+                            ((Terrain*)chunk->get(chunk_index))->var[2],
+                            ((Terrain*)chunk->get(chunk_index))->var[3]);
+                            }
+                        // ___________
+                        if (c2 == '}')
+                        {
+                           printf("Finished that one\n\n");
+                           coord_var_block = false;
+                           regular_var_block = false;
+                           beginning_coord_map = 0;
+                           variable_index = 0;
+                           chunk_index++;
+                           c2 = '$';
+                        }
                     }
                 }
             }
-
-    }
-        return chunk;
+    return chunk;
 }
 
 void describe_peripheral_chunk(const char *name_of_file, ObjectArray *chunk) {

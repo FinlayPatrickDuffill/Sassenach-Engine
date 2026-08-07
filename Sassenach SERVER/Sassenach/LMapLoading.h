@@ -214,9 +214,13 @@ class ObjectArray {
 class Terrain {
   private:
     const char* name;
-    float var[100];
     float number;
   public:
+    float var[100];
+
+    char texturepath[30];
+    char texture_label[30];
+
     char* getName() { return (char*)this->name; }
     Terrain(const char* name) { this->name = name; }
 
