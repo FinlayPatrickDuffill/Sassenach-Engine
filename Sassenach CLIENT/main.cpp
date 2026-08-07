@@ -482,8 +482,8 @@ for (int i = 0; i != 300; i++) {
                     animation_buffer[i] = -1;
         inks--;
         char nvalue;
-                play_step();
-        }
+        play_step();
+      }
     }
   }
 }

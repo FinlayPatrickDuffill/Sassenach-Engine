@@ -35,7 +35,7 @@ chunk_storage *load_chunk_from_file(const char *name_of_file) {
 
             chunk_storage * chunk_to_store;
 
-            int c; // Note: int, not char, required to handle EOF
+            int c;
             while ((c = std::fgetc(fp)) != EOF) {
                         if (c == '#')
             {
@@ -104,12 +104,8 @@ ObjectArray* describe_chunk(const char *name_of_file, ObjectArray *chunk) {
             }
             };
             squareroot = sqrt(size_eval_increment/chunk->chunk_enum);
-            // printf("Size eval increment %d\n",size_eval_increment);
-            // printf("chunk_enum %d\n",chunk->chunk_enum);
-            // printf("chunk_scope %d\n",chunk->chunk_scope);
             chunk->chunk_size_eval_increment = size_eval_increment;
             chunk->chunk_scope = squareroot * chunk->chunk_enum;
-            // printf("Chunk size eval increment/2 %d\n",chunk->chunk_size_eval_increment);
             chunk->flatten();
 
             int coord_x, coord_y, coord_z = -1;
@@ -160,7 +156,6 @@ void describe_peripheral_chunk(const char *name_of_file, ObjectArray *chunk) {
             while ((c = std::fgetc(fp)) != EOF) {
                         if (c == '#')
             {
-                //DEBUG_TERRAIN
                     size_eval_increment++;
                     chunk->add(new Terrain("DEBUG_TERRAIN"));
             }

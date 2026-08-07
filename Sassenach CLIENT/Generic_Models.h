@@ -23,26 +23,26 @@ float UI_model[] = {
 
     float flat_sprite_model[] = {
         // this is one face of a geometric object
-        -0.00015f, -0.015f, 0.0f,  0.0f, 0.0f,
-         0.00015f, -0.015f, 0.0f,  1.0f, 0.0f,
-         0.00015f,  0.025f, 0.0f,  1.0f, 1.0f,
-         0.00015f,  0.025f, 0.0f,  1.0f, 1.0f,
-        -0.00015f,  0.025f, 0.0f,  0.0f, 1.0f,
-        -0.00015f, -0.015f, 0.0f,  0.0f, 0.0f,
+        -0.00015f, -0.013f, 0.0f,  0.0f, 0.0f,
+         0.00015f, -0.013f, 0.0f,  1.0f, 0.0f,
+         0.00015f,  0.027f, 0.0f,  1.0f, 1.0f,
+         0.00015f,  0.027f, 0.0f,  1.0f, 1.0f,
+        -0.00015f,  0.027f, 0.0f,  0.0f, 1.0f,
+        -0.00015f, -0.013f, 0.0f,  0.0f, 0.0f,
     };
 
 void normalize_flat_sprite_model() {
 
-        flat_sprite_model[0] = (0.015f)*glm::sin(global_sprite_rot_angle_x);
-        flat_sprite_model[2] = (0.015f)*glm::cos(global_sprite_rot_angle_y);
-        flat_sprite_model[10] = (0.015f)*glm::sin(global_sprite_rot_angle_x);
-        flat_sprite_model[12] = (0.015f)*glm::cos(global_sprite_rot_angle_y);
+        flat_sprite_model[0] = (0.018f)*glm::sin(global_sprite_rot_angle_x);
+        flat_sprite_model[2] = (0.018f)*glm::cos(global_sprite_rot_angle_y);
+        flat_sprite_model[10] = (0.018f)*glm::sin(global_sprite_rot_angle_x);
+        flat_sprite_model[12] = (0.018f)*glm::cos(global_sprite_rot_angle_y);
         flat_sprite_model[27] = flat_sprite_model[2];
         flat_sprite_model[25] = flat_sprite_model[0];
         flat_sprite_model[22] = flat_sprite_model[2];
         flat_sprite_model[20] = flat_sprite_model[0];
-        flat_sprite_model[5] = (-0.015f)*glm::sin(global_sprite_rot_angle_x);
-        flat_sprite_model[7] = (-0.015f)*glm::cos(global_sprite_rot_angle_y);
+        flat_sprite_model[5] = (-0.018f)*glm::sin(global_sprite_rot_angle_x);
+        flat_sprite_model[7] = (-0.018f)*glm::cos(global_sprite_rot_angle_y);
         flat_sprite_model[15] = flat_sprite_model[5];
         flat_sprite_model[17] = flat_sprite_model[7];
         flat_sprite_model[10] = flat_sprite_model[15];
