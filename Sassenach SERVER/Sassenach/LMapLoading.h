@@ -234,6 +234,29 @@ class Terrain {
 #define carbon_coord_z 2
 #define carbon_cardinal_direction 3
 
+class Map_Initializer {
+
+    private:
+    const char* name;
+    float number;
+
+    public:
+
+    Uint8 client_name[256+12];
+    float var[100];
+
+    //Subdivide the map information until all of it is sent
+    int initializer_position;
+    char network_target;
+
+    char* getName() { return (char*)this->name; }
+    Map_Initializer(const char* name) { this->name = name; }
+
+    float getvar(int number) { return (float)this->var[number]; }
+    Map_Initializer(float variable, int number) { this->var[number] = variable; }
+
+};
+
 class Carbon {
   private:
     const char* name;

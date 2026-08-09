@@ -319,6 +319,16 @@ break;
                 }
             }
         }
+        break;
+
+        case 13: {
+
+            // Someone has requested data about the map
+
+            printf("Someone has requested data about the map\n");
+
+        }
+        break;
 
         case 20: {
         if (data[1] == 90 && data[2] == 90)
